@@ -24,3 +24,5 @@ Make a file named "names" and leave it blank.
 - More ease of use for non techy people
 - More generality on the use of this bot
 - Cleaner overall code
+- 100% compatibility on windows
+- GUI, yes, im really planning this, i dont know if this will ever happen.
