@@ -6,6 +6,7 @@ const fs2 = require('fs').promises;
 const path = require('path');
 const client = new Discord.Client();
 
+
 let opts = { 
     l : true,   // Logging flag
     p : false,  // Privacy mode flag
@@ -64,6 +65,13 @@ const pMessages = fc.split(/\r?\n/);
 
 fc = fs.readFileSync(opts.H || 'hangup', 'utf8');
 const endCallMessages = fc.split(/\r?\n/);
+
+// unused as of v5
+fc = fs.readFileSync('c.json', 'utf-8');
+const conf = JSON.parse(fc);
+const selfUserId = conf.sUI;
+const channelId = conf.cI;
+const ignoreUserIds = conf.iUI;
 
 async function updateFile(message, N) {
     try {
