@@ -11,11 +11,17 @@ Input correct variables
 
 Make a file named "names" and leave it blank.
 
+If using windows, for some odd reason, you need to do this:
+- Copy the contents of ``c.json``
+- Delete ``c.json``
+- Remake ``c.json``
+- Paste the contents back into your new ``c.json``
 
 - This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
 - We are not associated with Discord nor the Discord.js-selfbot project.
 
->note: this only works 100% on non-mentally-deranged-os's™️.. but doesnt on mentally deranged ones *cough cough* windows *cough* so if you find a bug please create an issue, it is not heavily tested on other os's besides linux :3
+
+>note: this only works 100% on Linux.. but doesnt on Windows so if you find a bug please create an issue, it is not heavily tested on other os's besides linux :3
 
 # Future plans
 - Less hardcoding on variables
@@ -24,5 +30,5 @@ Make a file named "names" and leave it blank.
 - More ease of use for non techy people
 - More generality on the use of this bot
 - Cleaner overall code
-- 100% compatibility on windows
+- 100% compatibility on windows (please!!!!! this crashes when i run it on windows and all my tools r made for windows so i cant just switch !!)
 - GUI, yes, im really planning this, i dont know if this will ever happen.
