@@ -109,6 +109,10 @@ async function updateFile(message, N) {
     }, 1000);
 })();
 
+if (process.platform == "win32") {
+    console.log("Hey, we see you're running windows, we haven't completed compatibility, it may be buggy.")
+  }
+
 client.on("messageCreate", async (message) => {
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
