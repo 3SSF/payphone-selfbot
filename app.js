@@ -101,6 +101,7 @@ async function updateFile(message, N) {
 
 client.on("messageCreate", async (message) => {
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
+        if (endCallMessages.includes(message.content) && message.author.username == "Payphone") message.reply("p.c");
         if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
 
         randomIndex = Math.floor(Math.random() * pMessages.length);
