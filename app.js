@@ -6,7 +6,6 @@ const fs2 = require('fs').promises;
 const path = require('path');
 const client = new Discord.Client();
 
-
 let opts = { 
     l : true,   // Logging flag
     p : false,  // Privacy mode flag
@@ -66,12 +65,12 @@ const pMessages = fc.split(/\r?\n/);
 fc = fs.readFileSync(opts.H || 'hangup', 'utf8');
 const endCallMessages = fc.split(/\r?\n/);
 
-// unused as of v5
 fc = fs.readFileSync('c.json', 'utf-8');
 const conf = JSON.parse(fc);
-const selfUserId = conf.sUI;
-const channelId = conf.cI;
-const ignoreUserIds = conf.iUI;
+
+const channelId = String(conf.cI);
+
+const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
 
 async function updateFile(message, N) {
     try {
@@ -101,12 +100,7 @@ async function updateFile(message, N) {
 }
 
 client.on("messageCreate", async (message) => {
-    if (endCallMessages.includes(message.content)) {
-        message.reply("p.c");
-        return;
-    }
-
-    if ((message.channel.id === "1332098431900057713" && message.author.id !== "1213820532328370227") || message.author.id === "1274838039499112520") {
+    if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
 
         randomIndex = Math.floor(Math.random() * pMessages.length);
@@ -115,7 +109,7 @@ client.on("messageCreate", async (message) => {
         if (!opts.l) return;
         if (!opts.p) {
             console.log(`${message.author.username} : `, message.content, " > ", pMessages[randomIndex]);
-            if (!opts.n) {  // Only log names if '-n' isn't set
+            if (!opts.n) {
                 updateFile(message, opts.N);
             }
         } else {
@@ -129,7 +123,7 @@ client.on("ready", () => {
 });
 
 require("dotenv").config();
-const token = process.env.token
+const token = process.env.token;
 client.login(token).catch((err) => {
     console.error("Failed to log in:", err);
 });
