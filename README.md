@@ -17,7 +17,7 @@ If using windows, for some odd reason, you need to do this:
 - Remake ``c.json``
 - Paste the contents back into your new ``c.json``
 
-- This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
+# This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
 - We are not associated with Discord nor the Discord.js-selfbot project.
 
 
