@@ -13,7 +13,7 @@ Make a file named "names" and leave it blank.
 
 
 - This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
-- We are not associated with Discord.
+- We are not associated with Discord nor the Discord.js-selfbot project.
 
 # Future plans
 - Less hardcoding on variables
