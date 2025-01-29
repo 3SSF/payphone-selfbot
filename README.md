@@ -15,7 +15,7 @@ Make a file named "names" and leave it blank.
 - This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
 - We are not associated with Discord nor the Discord.js-selfbot project.
 
--# note: this only works 100% on non-mentally-deranged-os's™️.. but doesnt on mentally deranged ones *cough cough* windows *cough* so if you find a bug please create an issue, it is not heavily tested on other os's besides linux :3
+#- note: this only works 100% on non-mentally-deranged-os's™️.. but doesnt on mentally deranged ones *cough cough* windows *cough* so if you find a bug please create an issue, it is not heavily tested on other os's besides linux :3
 
 # Future plans
 - Less hardcoding on variables
