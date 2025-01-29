@@ -4,8 +4,11 @@
 
 # Setup
 Install Node.JS
+
 Run setup.sh on unix-like OS's and setup.ps1 on Windows
+
 Input correct variables
+
 Make a file named "names" and leave it blank.
 
 
