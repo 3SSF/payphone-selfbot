@@ -15,8 +15,6 @@ let opts = {
     n : false    // Disable name logging flag
 };
 
-const defaultDir = __dirname;
-
 for (let i = 0; i < args.length; i++) {
     let arg = args[i];
     
@@ -72,6 +70,8 @@ const channelId = String(conf.cI);
 
 const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
 
+let timer = 30;
+
 async function updateFile(message, N) {
     try {
         let fileData = '';
@@ -99,6 +99,16 @@ async function updateFile(message, N) {
     }
 }
 
+(async () => {
+    const interval = setInterval(() => {
+        if (timer <= 0){
+            client.channels.cache.get(channelId).send('p.h');
+            client.channels.cache.get(channelId).send('p.c');
+        }
+        timer--;
+    }, 1000);
+})();
+
 client.on("messageCreate", async (message) => {
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
@@ -106,6 +116,8 @@ client.on("messageCreate", async (message) => {
             return;
         }
         if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
+
+        timer = 30;
 
         randomIndex = Math.floor(Math.random() * pMessages.length);
         await message.reply(pMessages[randomIndex]).catch((err) => console.error("Failed to send reply:", err));
