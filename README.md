@@ -14,6 +14,6 @@ Make a file named "names" and leave it blank.
 
 # Future plans
 - Less hardcoding on variables
-- --json reading for configs--
+- ~~json reading for configs~~
 - A script to automatically make the said json
 - More ease of use for non techy people
