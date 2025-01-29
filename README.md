@@ -20,3 +20,5 @@ Make a file named "names" and leave it blank.
 - ~~json reading for configs~~
 - ~~A script to automatically make the said json~~
 - More ease of use for non techy people
+- More generality on the use of this bot
+- Cleaner overall code
