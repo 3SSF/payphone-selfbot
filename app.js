@@ -6,6 +6,8 @@ const fsPromises = require('fs').promises;
 const path = require('path');
 const client = new Discord.Client();
 
+console.log('You are currently using the Windows development branch, there is no guarantee this will work properly, or even work at all!');
+
 let opts = { 
     logToConsole: true,       // -l
     privacyMode: false,       // -p
@@ -108,10 +110,6 @@ async function updateFile(message, namesFilePath) {
         timer--;
     }, 1000);
 })();
-
-if (process.platform == "win32") {
-    console.log("Hey, we see you're running windows, we haven't completed compatibility, it may be buggy. Please do report any and every issue you find, on the github page by creating an issue, so we can better solve compatibility issues!");
- }
 
 client.on("messageCreate", async (message) => {
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
