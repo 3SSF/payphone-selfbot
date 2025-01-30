@@ -30,7 +30,7 @@ If using windows, for some odd reason, you need to do this:
 - More ease of use for non techy people
 - More generality on the use of this bot
 - Cleaner overall code
-- 100% compatibility on windows (please!!!!! this crashes when i run it on windows and all my tools r made for windows so i cant just switch !!)
+- 100% compatibility on windows
 - GUI, yes, im really planning this, i dont know if this will ever happen.
 
 # Contributing to the bot
