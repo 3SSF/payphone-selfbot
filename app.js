@@ -2,17 +2,17 @@ const args = process.argv.slice(2);
 const { count } = require("console");
 const Discord = require("discord.js-selfbot-v13");
 const fs = require('fs');
-const fs2 = require('fs').promises;
+const fsPromises = require('fs').promises;
 const path = require('path');
 const client = new Discord.Client();
 
 let opts = { 
-    l : true,   // Logging flag
-    p : false,  // Privacy mode flag
-    P : null,   // Phrases file path
-    H : null,    // Hangup file path
-    N : "names", // Names file path
-    n : false    // Disable name logging flag
+    logToConsole: true,       // -l
+    privacyMode: false,       // -p
+    phrasesFilePath: null,    // -P
+    hangupFilePath: null,     // -H 
+    namesFilePath: "names",   // -N
+    disableNameLogging: false // -n 
 };
 
 for (let i = 0; i < args.length; i++) {
@@ -30,11 +30,11 @@ for (let i = 0; i < args.length; i++) {
                 process.exit(1);
             }
             if (arg === '-H') {
-                opts.H = args[i + 1];
+                opts.hangupFilePath = args[i + 1];
             } else if (arg === '-P') {
-                opts.P = args[i + 1];
+                opts.phrasesFilePath = args[i + 1];
             } else if (arg === '-N') {
-                opts.N = args[i + 1];
+                opts.namesFilePath = args[i + 1];
             }
             i++;
         }
@@ -46,9 +46,9 @@ for (let i = 0; i < args.length; i++) {
             }
             
             for (let char of arg.slice(1)) {
-                if (char === 'p') opts.p = true;
-                else if (char === 'l') opts.l = true;
-                else if (char === 'n') opts.n = true;
+                if (char === 'p') opts.privacyMode = true;
+                else if (char === 'l') opts.logToConsole = true;
+                else if (char === 'n') opts.disableNameLogging = true;
             }
         } else {
             console.error(`Invalid argument: ${arg}. Cannot stack arguments.`);
@@ -57,10 +57,10 @@ for (let i = 0; i < args.length; i++) {
     }
 }
 
-let fc = fs.readFileSync(opts.P || 'phrases', 'utf8');
+let fc = fs.readFileSync(opts.phrasesFilePath || 'phrases', 'utf8');
 const pMessages = fc.split(/\r?\n/);
 
-fc = fs.readFileSync(opts.H || 'hangup', 'utf8');
+fc = fs.readFileSync(opts.hangupFilePath || 'hangup', 'utf8');
 const endCallMessages = fc.split(/\r?\n/);
 
 fc = fs.readFileSync('c.json', 'utf-8');
@@ -72,11 +72,11 @@ const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
 
 let timer = 30;
 
-async function updateFile(message, N) {
+async function updateFile(message, namesFilePath) {
     try {
         let fileData = '';
         try {
-            fileData = await fs2.readFile(N, 'utf-8');
+            fileData = await fsPromises.readFile(namesFilePath, 'utf-8');
         } catch (err) {
             if (err.code !== 'ENOENT') throw err;
         }
@@ -93,17 +93,17 @@ async function updateFile(message, N) {
         userMap.set(username, currentCount + 1);
 
         const updatedData = Array.from(userMap).map(([name, number]) => `${name}:${number}`).join('\n');
-        await fs2.writeFile(N, updatedData + '\n', 'utf-8');
+        await fsPromises.writeFile(namesFilePath, updatedData + '\n', 'utf-8');
     } catch (error) {
         console.error('Error:', error.message);
     }
 }
 
 (async () => {
-    const interval = setInterval(() => {
+    setInterval(async () => {
         if (timer <= 0){
-            client.channels.cache.get(channelId).send('p.h');
-            client.channels.cache.get(channelId).send('p.c');
+            await client.channels.cache.get(channelId).send('p.h');
+            await client.channels.cache.get(channelId).send('p.c');
         }
         timer--;
     }, 1000);
@@ -116,7 +116,7 @@ if (process.platform == "win32") {
 client.on("messageCreate", async (message) => {
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
-            message.reply("p.c");
+            await message.reply("p.c");
             return;
         }
         if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
@@ -126,11 +126,11 @@ client.on("messageCreate", async (message) => {
         randomIndex = Math.floor(Math.random() * pMessages.length);
         await message.reply(pMessages[randomIndex]).catch((err) => console.error("Failed to send reply:", err));
         
-        if (!opts.l) return;
-        if (!opts.p) {
+        if (!opts.logToConsole) return;
+        if (!opts.privacyMode) {
             console.log(`${message.author.username} : `, message.content, " > ", pMessages[randomIndex]);
-            if (!opts.n) {
-                updateFile(message, opts.N);
+            if (!opts.disableNameLogging) {
+                updateFile(message, opts.namesFilePath);
             }
         } else {
             console.log(`${message.author.username[0]}${message.author.username[1]}.. : `, message.content, " > ", pMessages[randomIndex]);

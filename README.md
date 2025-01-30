@@ -41,4 +41,5 @@ If using windows, for some odd reason, you need to do this:
 3. constant variabels - Declare variables as constants if that is feasable.
 4. asynchronous execution - Anything after initialization, must be asynchronous to prevent delays.
 5. descriptive function names - Any functions that are added, must have descriptive names that are easy to understand.
-6. linux first - Linux goes first before any other operating systems for compatibility, so any compatibility changes must not hinder any features available on Linux.
+6. descriptive variable names - Same thing as functions, but with variables.
+7. linux first - Linux goes first before any other operating systems for compatibility, so any compatibility changes must not hinder any features available on Linux.
