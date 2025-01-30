@@ -32,3 +32,13 @@ If using windows, for some odd reason, you need to do this:
 - Cleaner overall code
 - 100% compatibility on windows (please!!!!! this crashes when i run it on windows and all my tools r made for windows so i cant just switch !!)
 - GUI, yes, im really planning this, i dont know if this will ever happen.
+
+# Contributing to the bot
+### If you plan on contributing, then please follow these standards:
+
+1. camelCase - Use camelCasing for our variable names.
+2. variable declaration - Declare related variables near the top, close to eachother.
+3. constant variabels - Declare variables as constants if that is feasable.
+4. asynchronous execution - Anything after initialization, must be asynchronous to prevent delays.
+5. descriptive function names - Any functions that are added, must have descriptive names that are easy to understand.
+6. linux first - Linux goes first before any other operating systems for compatibility, so any compatibility changes must not hinder any features available on Linux.
