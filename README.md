@@ -21,7 +21,7 @@ If using windows, for some odd reason, you need to do this:
 - We are not associated with Discord nor the Discord.js-selfbot project.
 
 
->note: this only works 100% on Linux.. but doesnt on Windows so if you find a bug please create an issue, it is not heavily tested on other os's besides linux :3
+>note: this only works 100% on Linux.. but doesnt on Windows so if you find a bug please create an issue, it is not heavily tested on other os's besides linux :3 
 
 # Future plans
 - Less hardcoding on variables
@@ -30,7 +30,7 @@ If using windows, for some odd reason, you need to do this:
 - More ease of use for non techy people
 - More generality on the use of this bot
 - Cleaner overall code
-- 100% compatibility on windows
+- 100% compatibility on windows (please!!!!! this crashes when i run it on windows and all my tools r made for windows so i cant just switch !!)
 - GUI, yes, im really planning this, i dont know if this will ever happen.
 
 # Contributing to the bot
@@ -43,3 +43,4 @@ If using windows, for some odd reason, you need to do this:
 5. descriptive function names - Any functions that are added, must have descriptive names that are easy to understand.
 6. descriptive variable names - Same thing as functions, but with variables.
 7. linux first - Linux goes first before any other operating systems for compatibility, so any compatibility changes must not hinder any features available on Linux.
+8. NO DO WINDOWS.
