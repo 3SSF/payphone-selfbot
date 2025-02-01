@@ -17,6 +17,14 @@ let opts = {
     disableNameLogging: false // -n 
 };
 
+
+if (process.platform !== "win32") {
+    console.log("!!! LINUX DETECTED !!!")
+    console.log("You are running a non-windows OS, please note this will be VERY instable, and probably wont work, unless you are on the right distros.")
+    console.log("Please use our main branch for better compatibility with Linux, and other OS's.")
+    console.log("-------------------------------------------------------")
+ }
+
 for (let i = 0; i < args.length; i++) {
     let arg = args[i];
     
@@ -66,11 +74,10 @@ fc = fs.readFileSync(opts.hangupFilePath || 'hangup', 'utf8');
 const endCallMessages = fc.split(/\r?\n/);
 
 fc = fs.readFileSync('c.json', 'utf-8');
-const conf = JSON.parse(fc);
 
-const channelId = String(conf.cI);
+const channelId = String(process.env.channelId);
 
-const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
+const ignoreUserIds = Array.isArray(process.env.iUI) ? process.env.iUI : [];
 
 let timer = 30;
 
@@ -101,17 +108,18 @@ async function updateFile(message, namesFilePath) {
     }
 }
 
-(async () => {
-    setInterval(async () => {
-        if (timer <= 0){
-            await client.channels.cache.get(channelId).send('p.h');
-            await client.channels.cache.get(channelId).send('p.c');
-        }
-        timer--;
-    }, 1000);
-})();
+//(async () => {
+  //  setInterval(async () => {
+        //if (timer <= 0){
+          //  await client.channels.cache.get(channelId).send('p.h');
+        //    await client.channels.cache.get(channelId).send('p.c');
+      //  }
+    //    timer--;
+  //  }, 1000);
+//})();
 
 client.on("messageCreate", async (message) => {
+    console.log("message recieved")
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
             await message.reply("p.c");
@@ -120,7 +128,7 @@ client.on("messageCreate", async (message) => {
         if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
 
         timer = 30;
-
+        console.log("s1 pass")
         randomIndex = Math.floor(Math.random() * pMessages.length);
         await message.reply(pMessages[randomIndex]).catch((err) => console.error("Failed to send reply:", err));
         
@@ -133,6 +141,7 @@ client.on("messageCreate", async (message) => {
         } else {
             console.log(`${message.author.username[0]}${message.author.username[1]}.. : `, message.content, " > ", pMessages[randomIndex]);
         }
+        console.log("s2 pass")
     }
 });
 
