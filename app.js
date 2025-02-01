@@ -13,6 +13,8 @@ let opts = {
     hangupFilePath: null,     // -H 
     namesFilePath: "names",   // -N
     disableNameLogging: false // -n 
+    autoSkipMasks: true,      // -m
+    masksFilePath: null,      // -M   
 };
 
 for (let i = 0; i < args.length; i++) {
@@ -24,9 +26,10 @@ for (let i = 0; i < args.length; i++) {
             process.exit();
         }
 
-        else if (arg === '-H' || arg === '-P' || arg === '-N') {
+        // Handling path flags (-P, -H, -N, -M) separately
+        else if (arg === '-H' || arg === '-P' || arg === '-N' || arg === '-M') {
             if (i + 1 < args.length && args[i + 1].startsWith('-')) {
-                console.error(`Error: Path flags (-P, -H, -N) cannot be stacked with other flags.`);
+                console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
                 process.exit(1);
             }
             if (arg === '-H') {
@@ -35,20 +38,23 @@ for (let i = 0; i < args.length; i++) {
                 opts.phrasesFilePath = args[i + 1];
             } else if (arg === '-N') {
                 opts.namesFilePath = args[i + 1];
+            } else if (arg === '-M') {
+                opts.masksFilePath = args[i + 1];
             }
             i++;
         }
 
-        else if (arg.includes('p') || arg.includes('l') || arg.includes('n')) {
-            if (arg.includes('P') || arg.includes('H') || arg.includes('N')) {
-                console.error(`Error: Path flags (-P, -H, -N) cannot be stacked with other flags.`);
+        else if (arg.includes('p') || arg.includes('l') || arg.includes('n') || arg.includes('m')) {
+            if (arg.includes('P') || arg.includes('H') || arg.includes('N') || arg.includes('M')) {
+                console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
                 process.exit(1);
             }
             
             for (let char of arg.slice(1)) {
                 if (char === 'p') opts.privacyMode = true;
-                else if (char === 'l') opts.logToConsole = true;
+                else if (char === 'l') opts.logToConsole = false;
                 else if (char === 'n') opts.disableNameLogging = true;
+                else if (char === 'm') opts.autoSkipMasks = false;
             }
         } else {
             console.error(`Invalid argument: ${arg}. Cannot stack arguments.`);
@@ -62,6 +68,9 @@ const pMessages = fc.split(/\r?\n/);
 
 fc = fs.readFileSync(opts.hangupFilePath || 'hangup', 'utf8');
 const endCallMessages = fc.split(/\r?\n/);
+
+fc = fs.readFileSync(opts.masksFilePath || 'masks', 'utf8');
+const maskNames = fc.split(/\r?\n/);
 
 fc = fs.readFileSync('c.json', 'utf-8');
 const conf = JSON.parse(fc);
@@ -119,6 +128,7 @@ if (process.platform == "win32") {
 } 
 
 client.on("messageCreate", async (message) => {
+    if (masks.includes(message.author.username) && opts.autoSkipMasks) message.reply('p.h');
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
             await message.reply("p.c");
