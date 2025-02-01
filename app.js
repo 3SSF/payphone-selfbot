@@ -7,14 +7,14 @@ const path = require('path');
 const client = new Discord.Client();
 
 let opts = { 
-    logToConsole: true,       // -l
-    privacyMode: false,       // -p
-    phrasesFilePath: null,    // -P
-    hangupFilePath: null,     // -H 
-    namesFilePath: "names",   // -N
-    disableNameLogging: false // -n 
-    autoSkipMasks: true,      // -m
-    masksFilePath: null,      // -M   
+    logToConsole: true,         // -l
+    privacyMode: false,         // -p
+    phrasesFilePath: 'phrases', // -P
+    hangupFilePath: 'hangup',   // -H
+    namesFilePath: 'names',     // -N
+    disableNameLogging: false,  // -n 
+    autoSkipMasks: true,        // -m
+    masksFilePath: 'masks',     // -M 
 };
 
 for (let i = 0; i < args.length; i++) {
@@ -22,11 +22,10 @@ for (let i = 0; i < args.length; i++) {
     
     if (arg.startsWith('-')) {
         if (arg === '-h') {
-            console.log('payphone-bot 2000 manual\narguments:\n\t-p - Privacy mode: hides full username, only displaying first 2 letters of username in console\n\t-l - Log to console: whether or not the messages, and responses should be logged to console\n\t-P <file> - Custom file path for phrases\n\t-H <file> - Custom file path for hangup\n\t-n - Disable name logging\n\t-N <file> - Custom file path for names');
+            console.log('payphone-bot 2000 manual\narguments:\n\t-p - Privacy mode: hides full username, only displaying first 2 letters of username in console\n\t-l - Log to console: whether or not the messages, and responses should be logged to console\n\t-P <file> - Custom file path for phrases\n\t-H <file> - Custom file path for hangup\n\t-n - Disable name logging\n\t-N <file> - Custom file path for names\n\y-m Disable auto skipping masked users\n\t-M <file> - masked usernames file path');
             process.exit();
         }
 
-        // Handling path flags (-P, -H, -N, -M) separately
         else if (arg === '-H' || arg === '-P' || arg === '-N' || arg === '-M') {
             if (i + 1 < args.length && args[i + 1].startsWith('-')) {
                 console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
@@ -63,13 +62,13 @@ for (let i = 0; i < args.length; i++) {
     }
 }
 
-let fc = fs.readFileSync(opts.phrasesFilePath || 'phrases', 'utf8');
+let fc = fs.readFileSync(opts.phrasesFilePath, 'utf8');
 const pMessages = fc.split(/\r?\n/);
 
-fc = fs.readFileSync(opts.hangupFilePath || 'hangup', 'utf8');
+fc = fs.readFileSync(opts.hangupFilePath, 'utf8');
 const endCallMessages = fc.split(/\r?\n/);
 
-fc = fs.readFileSync(opts.masksFilePath || 'masks', 'utf8');
+fc = fs.readFileSync(opts.masksFilePath, 'utf8');
 const maskNames = fc.split(/\r?\n/);
 
 fc = fs.readFileSync('c.json', 'utf-8');
@@ -128,7 +127,7 @@ if (process.platform == "win32") {
 } 
 
 client.on("messageCreate", async (message) => {
-    if (masks.includes(message.author.username) && opts.autoSkipMasks) message.reply('p.h');
+    if (maskNames.includes(message.author.username) && opts.autoSkipMasks) message.reply('p.h');
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
             await message.reply("p.c");
@@ -163,4 +162,6 @@ const token = process.env.token;
 client.login(token).catch((err) => {
     console.error("Failed to log in:", err);
 });
+
+
 
