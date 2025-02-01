@@ -2,6 +2,9 @@
 ## A discord automatic messaging base for payphone-like bots.
 ### Please don't use this for PayPhone! We only use it as an example
 
+# For windows users only:
+PLEASE swap to 'windows-dev' branch
+
 # Setup
 Install Node.JS
 
@@ -15,7 +18,7 @@ Make a file named "names" and leave it blank.
 - We are not associated with Discord nor the Discord.js-selfbot project.
 
 
->note: this only works 100% on Linux.. but doesnt on Windows so if you find a bug please create an issue, it is not heavily tested on other os's besides linux :3 
+>note: this only works 100% on Linux... Incompatible with windows, untested on other os's, tho it SHOULD work.
 
 # Future plans
 - Less hardcoding on variables
