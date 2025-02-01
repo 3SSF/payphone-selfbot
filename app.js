@@ -111,7 +111,8 @@ async function updateFile(message, namesFilePath) {
 
 if (process.platform == "win32") {
     console.log("Hey, we see you're running windows, we haven't completed compatibility, it may be buggy. Please do report any and every issue you find, on the github page by creating an issue, so we can better solve compatibility issues!");
- }
+    console.log("Please use our Windows branch for more compatibility!")
+} 
 
 client.on("messageCreate", async (message) => {
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
