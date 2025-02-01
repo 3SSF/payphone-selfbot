@@ -1,3 +1,8 @@
+// READ ME!!!!!
+/// IF YOU ARE USING DOTENV, YOU **NEED** TO HAVE THIS NEXT LINE ABOVE IT. OR IT WILL ERROR OUT FOR SOME ODD FUCKING REASON
+// require("dotenv").config()
+// idk why this works, but we're keeping it
+
 const args = process.argv.slice(2);
 const { count } = require("console");
 const Discord = require("discord.js-selfbot-v13");
@@ -7,16 +12,34 @@ const path = require('path');
 const client = new Discord.Client();
 
 console.log('You are currently using the Windows development branch, there is no guarantee this will work properly, or even work at all!');
-
+console.log("Please note ignoring users doesn't work on this branch currently.")
+require("dotenv").config()
+if (!process.env.channelId)
+{
+    console.log("Please run setup.ps1 or manually set the values in .env.")
+    process.exit()
+}
 let opts = { 
     logToConsole: true,       // -l
     privacyMode: false,       // -p
     phrasesFilePath: null,    // -P
     hangupFilePath: null,     // -H 
     namesFilePath: "names",   // -N
-    disableNameLogging: false // -n 
+    disableNameLogging: false, // -n 
+    skipMasks: true // whether to automatically skip masks or not.
 };
 
+let masks = []
+if (opts.skipMasks) {
+    fs.readFile('masks', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading masks:', err)
+        }
+
+        masks = data.split('\n').map(line => line.trim());
+        console.log(masks)
+    })
+}
 
 if (process.platform !== "win32") {
     console.log("!!! LINUX DETECTED !!!")
@@ -73,11 +96,15 @@ const pMessages = fc.split(/\r?\n/);
 fc = fs.readFileSync(opts.hangupFilePath || 'hangup', 'utf8');
 const endCallMessages = fc.split(/\r?\n/);
 
-fc = fs.readFileSync('c.json', 'utf-8');
 
+require("dotenv").config()
 const channelId = String(process.env.channelId);
+console.log(channelId)
 
 const ignoreUserIds = Array.isArray(process.env.iUI) ? process.env.iUI : [];
+ignoreUserIds.forEach(function(entry) {
+    console.log(entry);
+  });
 
 let timer = 30;
 
@@ -119,16 +146,29 @@ async function updateFile(message, namesFilePath) {
 //})();
 
 client.on("messageCreate", async (message) => {
-    console.log("message recieved")
-    if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
+    if(message == "")
+    {
+        stop
+    }
+    if (ignoreUserIds.includes(message.author.id))
+    {
+        stop
+    }
+    
+    if (message.channel.id === channelId && message.author.id !== client.user.id) {
+        if (masks.includes(message.author.displayName)) {
+            await message.reply("p.h");
+            await message.reply("p.c");
+            
+        }
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
             await message.reply("p.c");
             return;
+            
         }
         if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
 
         timer = 30;
-        console.log("s1 pass")
         randomIndex = Math.floor(Math.random() * pMessages.length);
         await message.reply(pMessages[randomIndex]).catch((err) => console.error("Failed to send reply:", err));
         
@@ -141,7 +181,6 @@ client.on("messageCreate", async (message) => {
         } else {
             console.log(`${message.author.username[0]}${message.author.username[1]}.. : `, message.content, " > ", pMessages[randomIndex]);
         }
-        console.log("s2 pass")
     }
 });
 

@@ -17,6 +17,6 @@ $formatted_iUI = ($iUI -split ', *') -join '", "'
 @"
 token="$token"
 channelId="$ci"
-iUI="$formatted_iUI"
+iUI="[$formatted_iUI]"
 "@ | Set-Content -Encoding UTF8 .env
 
