@@ -12,6 +12,8 @@ echo 'Enter hangup msg:'
 read hangup
 echo 'Enter auto skip delay (number):'
 read delay
+echo 'Enter name of the userphone/payphone bot (case sensitive):'
+read botname
 
 formatted_iUI=$(echo "$iUI" | sed 's/, */", "/g')
 
@@ -20,7 +22,8 @@ echo "{
     \"iUI\": [\"$formatted_iUI\"],
     \"callMsg\": \"$call\",
     \"hangupMsg\": \"$hangup\",
-    \"autoSkipDelay\": $delay
+    \"autoSkipDelay\": $delay,
+    \"phoneBotName\": \"$botname\"
 }" > c.json
 
 echo "

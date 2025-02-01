@@ -76,6 +76,7 @@ const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
 let hangupDelay = conf.hangupDelay;
 const callMessage = conf.callMsg;
 const hangupMessage = conf.hangupMsg;
+const phoneBotName = conf.phoneBotName;
 
 async function updateFile(message, namesFilePath) {
     try {
@@ -115,18 +116,17 @@ async function updateFile(message, namesFilePath) {
 })();
 
 if (process.platform == "win32") {
-    console.log("Hey, we see you're running windows, we haven't completed compatibility, it may be buggy. Please do report any and every issue you find, on the github page by creating an issue, so we can better solve compatibility issues!");
-    console.log("Please use our Windows branch for more compatibility!")
+    console.log("Hey, we see you're running windows, we urge you to use our 'windows-dev' branch instead, unless you are fine with heavy debugging.");
 } 
 
 client.on("messageCreate", async (message) => {
     if (maskNames.includes(message.author.username) && opts.autoSkipMasks) message.reply(hangupMessage); // Reply with hangup message
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
-        if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
-            await message.reply(callMessage); // Reply with call message
+        if (endCallMessages.includes(message.content) && message.author.username == phoneBotName){
+            await message.reply(callMessage);
             return;
         }
-        if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
+        if (message.author.username == phoneBotName && message.content.includes("TIP")) return;
 
         hangupDelay = conf.hangupDelay;
 

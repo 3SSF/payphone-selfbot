@@ -1,4 +1,8 @@
 {
     "cI": null,
-    "iUI": [null]
+    "iUI": [null],
+    "callMsg": null,
+    "hangupMsg": null,
+    "autoSkipDelay": null,
+    "phoneBotName": null
 }
