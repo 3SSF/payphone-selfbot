@@ -7,14 +7,14 @@ const path = require('path');
 const client = new Discord.Client();
 
 let opts = { 
-    logToConsole: true,         // -l
-    privacyMode: false,         // -p
-    phrasesFilePath: 'phrases', // -P
-    hangupFilePath: 'hangup',   // -H
-    namesFilePath: 'names',     // -N
-    disableNameLogging: false,  // -n 
-    autoSkipMasks: true,        // -m
-    masksFilePath: 'masks',     // -M 
+    logToConsole: true,              // -l
+    privacyMode: false,              // -p
+    phrasesFilePath: 'list/phrases', // -P
+    hangupFilePath: 'list/hangup',   // -H
+    namesFilePath: 'list/names',     // -N
+    disableNameLogging: false,       // -n 
+    autoSkipMasks: true,             // -m
+    masksFilePath: 'list/masks',     // -M 
 };
 
 for (let i = 0; i < args.length; i++) {
