@@ -63,23 +63,19 @@ for (let i = 0; i < args.length; i++) {
 }
 
 const pMessages = fs.readFileSync(opts.phrasesFilePath, 'utf8').split(/\r?\n/);
-
 const endCallMessages = fs.readFileSync(opts.hangupFilePath, 'utf8').split(/\r?\n/);
-
 const maskNames = fs.readFileSync(opts.masksFilePath, 'utf8').split(/\r?\n/);
 
 const conf = JSON.parse(fs.readFileSync('c.json', 'utf-8'));
-
-
 const channelId = String(conf.cI);
 if (channelId === '') {
   console.error('channelId is empty, exiting... Please run setup.sh.');
   process.exit(1);
 }
-
 const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
-
-let timer = 30;
+let hangupDelay = conf.hangupDelay;
+const callMessage = conf.callMsg;
+const hangupMessage = conf.hangupMsg;
 
 async function updateFile(message, namesFilePath) {
     try {
@@ -110,11 +106,11 @@ async function updateFile(message, namesFilePath) {
 
 (async () => {
     setInterval(async () => {
-        if (timer <= 0){
-            await client.channels.cache.get(channelId).send('p.h');
-            await client.channels.cache.get(channelId).send('p.c');
+        if (hangupDelay <= 0){
+            await client.channels.cache.get(channelId).send(hangupMessage); // Send hangup message
+            await client.channels.cache.get(channelId).send(callMessage); // Send call message
         }
-        timer--;
+        hangupDelay--;
     }, 1000);
 })();
 
@@ -124,15 +120,15 @@ if (process.platform == "win32") {
 } 
 
 client.on("messageCreate", async (message) => {
-    if (maskNames.includes(message.author.username) && opts.autoSkipMasks) message.reply('p.h');
+    if (maskNames.includes(message.author.username) && opts.autoSkipMasks) message.reply(hangupMessage); // Reply with hangup message
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
-            await message.reply("p.c");
+            await message.reply(callMessage); // Reply with call message
             return;
         }
         if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
 
-        timer = 30;
+        hangupDelay = conf.hangupDelay;
 
         randomIndex = Math.floor(Math.random() * pMessages.length);
         await message.reply(pMessages[randomIndex]).catch((err) => console.error("Failed to send reply:", err));
@@ -159,6 +155,4 @@ const token = process.env.token;
 client.login(token).catch((err) => {
     console.error("Failed to log in:", err);
 });
-
-
 
