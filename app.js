@@ -22,7 +22,7 @@ for (let i = 0; i < args.length; i++) {
     
     if (arg.startsWith('-')) {
         if (arg === '-h') {
-            console.log('payphone-bot 2000 manual\narguments:\n\t-p - Privacy mode: hides full username, only displaying first 2 letters of username in console\n\t-l - Log to console: whether or not the messages, and responses should be logged to console\n\t-P <file> - Custom file path for phrases\n\t-H <file> - Custom file path for hangup\n\t-n - Disable name logging\n\t-N <file> - Custom file path for names\n\y-m Disable auto skipping masked users\n\t-M <file> - masked usernames file path');
+            console.log('payphone-bot 2000 manual\narguments:\n\t-p - Privacy mode: hides full username, only displaying first 2 letters of username in console\n\t-l - Log to console: whether or not the messages, and responses should be logged to console\n\t-P <file> - Custom file path for phrases\n\t-H <file> - Custom file path for hangup\n\t-n - Disable name logging\n\t-N <file> - Custom file path for names\n\t-m Disable auto skipping masked users\n\t-M <file> - masked usernames file path');
             process.exit();
         }
 
