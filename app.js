@@ -68,7 +68,8 @@ const endCallMessages = fs.readFileSync(opts.hangupFilePath, 'utf8').split(/\r?\
 
 const maskNames = fs.readFileSync(opts.masksFilePath, 'utf8').split(/\r?\n/);
 
-const conf = fs.readFileSync('c.json', 'utf-8').parse(fc);
+const conf = JSON.parse(fs.readFileSync('c.json', 'utf-8'));
+
 
 const channelId = String(conf.cI);
 if (channelId === '') {
