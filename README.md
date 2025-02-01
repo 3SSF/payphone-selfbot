@@ -5,7 +5,7 @@
 # Setup
 Install Node.JS
 
-Run setup.sh on unix-like OS's and setup.ps1 on Windows
+Run setup.sh on unix-like OS's 
 
 Input correct variables
 
