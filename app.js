@@ -10,7 +10,13 @@ const fs = require('fs');
 const fsPromises = require('fs').promises;
 const path = require('path');
 const client = new Discord.Client();
-
+require("dotenv").config()
+const botname = process.env.bot
+console.log(botname)
+const call = process.env.call
+console.log(call)
+const hangup = process.env.hangup
+console.log(hangup)
 console.log('You are currently using the Windows development branch, there is no guarantee this will work properly, or even work at all!');
 console.log("Please note ignoring users doesn't work on this branch currently.")
 require("dotenv").config()
@@ -141,13 +147,17 @@ async function updateFile(message, namesFilePath) {
 //})();
 
 client.on("messageCreate", async (message) => {
-    if (masks.includes(message.author.username) && opts.autoSkipMasks) message.reply('p.h');
+    require("dotenv").config
+    if (masks.includes(message.author.username) && opts.autoSkipMasks) message.reply(hangup);
     if (message.channel.id === channelId && message.author.id !== client.user.id) {
-        if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
-            await message.reply("p.c");
+        require("dotenv").config
+        if (endCallMessages.includes(message.content) && message.author.username == botname){
+            require("dotenv").config
+            await message.reply(call);
             return;
         }
-        if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
+        require("dotenv").config
+        if (message.author.username == botname && message.content.includes("TIP")) return;
 
         timer = 30;
 
