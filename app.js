@@ -67,6 +67,10 @@ fc = fs.readFileSync('c.json', 'utf-8');
 const conf = JSON.parse(fc);
 
 const channelId = String(conf.cI);
+if (channelId === '') {
+  console.error('channelId is empty, exiting... Please run setup.sh.');
+  process.exit(1);
+}
 
 const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
 
@@ -141,6 +145,7 @@ client.on("messageCreate", async (message) => {
 
 client.on("ready", () => {
     console.log("Bot is now online!");
+    console.log(`Channel name: ${client.channels.cache.get(channelId).name}`).catch((err) => console.error("Failed to get channel name:", err));
 });
 
 require("dotenv").config();
