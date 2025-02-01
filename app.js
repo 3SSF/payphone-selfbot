@@ -151,7 +151,7 @@ client.on("messageCreate", async (message) => {
 
 client.on("ready", () => {
     console.log("Bot is now online!");
-    console.log(`Channel name: ${client.channels.cache.get(channelId).name}`).catch((err) => console.error("Failed to get channel name:", err));
+    console.log(`Channel name: ${client.channels.cache.get(channelId).name}`);
 });
 
 require("dotenv").config();
