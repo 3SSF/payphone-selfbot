@@ -14,7 +14,7 @@ Swap to [this](https://github.com/3SSF/payphone-selfbot/tree/windows-dev) branch
 
 4. Make a file named "names" and leave it blank.
 
-5. If you want a default argument configuration, in the root directory of the project create a file named "args.json" and make an array in it called "args", and format it with arguments as you would normally, the only difference being a comma between each argument stack, and it surrounded by double quotes.
+5. **(OPTIONAL!)** If you want a default argument configuration, in the root directory of the project create a file named "args.json" and make an array in it called "args", and format it with arguments as you would normally, the only difference being a comma between each argument stack, and it surrounded by double quotes.
 
 example:
 
