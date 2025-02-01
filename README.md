@@ -6,13 +6,21 @@
 Swap to [this](https://github.com/3SSF/payphone-selfbot/tree/windows-dev) branch!
 
 # Setup
-Install Node.JS
+1. Install Node.JS
 
-Run setup.sh
+2. Run setup.sh
 
-Input correct variables
+3. Input correct variables
 
-Make a file named "names" and leave it blank.
+4. Make a file named "names" and leave it blank.
+
+5. If you want a default argument configuration, in the root directory of the project create a file named "args.json" and make an array in it called "args", and format it with arguments as you would normally, the only difference being a comma between each argument stack, and it surrounded by double quotes.
+
+example:
+
+{
+    "args" : ["-nlm", "-H", "/path/to/file"]
+}
 
 # This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
 - We are not associated with Discord nor the Discord.js-selfbot project.

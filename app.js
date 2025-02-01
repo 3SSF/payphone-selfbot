@@ -1,10 +1,20 @@
-const args = process.argv.slice(2);
+const fs = require('fs');
+let args = [];
+
+if (fs.existsSync('args.json')) {
+    try {
+        const jsonData = JSON.parse(fs.readFileSync('args.json', 'utf8'));
+        if (jsonData.args && Array.isArray(jsonData.args)) args = jsonData.args;
+    } catch (error) {
+        console.error('Error reading args.json:', error.message);
+    }
+}
+
+args = args.concat(process.argv.slice(2));
+
 const { count } = require("console");
 const Discord = require("discord.js-selfbot-v13");
-const fs = require('fs');
 const fsPromises = require('fs').promises;
-const path = require('path');
-const client = new Discord.Client();
 
 let opts = { 
     logToConsole: true,              // -l
@@ -25,7 +35,6 @@ for (let i = 0; i < args.length; i++) {
             console.log('payphone-bot 2000 manual\narguments:\n\t-p - Privacy mode: hides full username, only displaying first 2 letters of username in console\n\t-l - Log to console: whether or not the messages, and responses should be logged to console\n\t-P <file> - Custom file path for phrases\n\t-H <file> - Custom file path for hangup\n\t-n - Disable name logging\n\t-N <file> - Custom file path for names\n\t-m Disable auto skipping masked users\n\t-M <file> - masked usernames file path');
             process.exit();
         }
-
         else if (arg === '-H' || arg === '-P' || arg === '-N' || arg === '-M') {
             if (i + 1 < args.length && args[i + 1].startsWith('-')) {
                 console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
@@ -42,13 +51,11 @@ for (let i = 0; i < args.length; i++) {
             }
             i++;
         }
-
         else if (arg.includes('p') || arg.includes('l') || arg.includes('n') || arg.includes('m')) {
             if (arg.includes('P') || arg.includes('H') || arg.includes('N') || arg.includes('M')) {
                 console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
                 process.exit(1);
             }
-            
             for (let char of arg.slice(1)) {
                 if (char === 'p') opts.privacyMode = true;
                 else if (char === 'l') opts.logToConsole = false;
@@ -108,8 +115,8 @@ async function updateFile(message, namesFilePath) {
 (async () => {
     setInterval(async () => {
         if (hangupDelay <= 0){
-            await client.channels.cache.get(channelId).send(hangupMessage); // Send hangup message
-            await client.channels.cache.get(channelId).send(callMessage); // Send call message
+            await client.channels.cache.get(channelId).send(hangupMessage);
+            await client.channels.cache.get(channelId).send(callMessage);
         }
         hangupDelay--;
     }, 1000);
@@ -120,7 +127,7 @@ if (process.platform == "win32") {
 } 
 
 client.on("messageCreate", async (message) => {
-    if (maskNames.includes(message.author.username) && opts.autoSkipMasks) message.reply(hangupMessage); // Reply with hangup message
+    if (maskNames.includes(message.author.username) && opts.autoSkipMasks) message.reply(hangupMessage);
     if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
         if (endCallMessages.includes(message.content) && message.author.username == phoneBotName){
             await message.reply(callMessage);
