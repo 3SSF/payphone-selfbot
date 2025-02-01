@@ -3,12 +3,12 @@
 ### Please don't use this for PayPhone! We only use it as an example
 
 # For windows users only:
-PLEASE swap to 'windows-dev' branch
+Swap to [this](https://github.com/3SSF/payphone-selfbot/tree/windows-dev) branch!
 
 # Setup
 Install Node.JS
 
-Run setup.sh on unix-like OS's 
+Run setup.sh
 
 Input correct variables
 
@@ -16,9 +16,6 @@ Make a file named "names" and leave it blank.
 
 # This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
 - We are not associated with Discord nor the Discord.js-selfbot project.
-
-
->note: this only works 100% on Linux... Incompatible with windows, untested on other os's, tho it SHOULD work.
 
 # Future plans
 - Less hardcoding on variables
