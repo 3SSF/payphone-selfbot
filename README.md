@@ -4,5 +4,7 @@ This is a Windows only developing branch, focused specifically on Windows, do NO
 # Known Bugs
  - Ignored user ids doesn't work.
 
-# features linux doesnt have 😎😎😎😎😎😎😎😎
- - organized stuff
+# Future plans
+- More ease of use for non techy people
+- More generality on the use of this bot
+- Cleaner overall code
