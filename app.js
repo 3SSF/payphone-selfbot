@@ -62,17 +62,13 @@ for (let i = 0; i < args.length; i++) {
     }
 }
 
-let fc = fs.readFileSync(opts.phrasesFilePath, 'utf8');
-const pMessages = fc.split(/\r?\n/);
+const pMessages = fs.readFileSync(opts.phrasesFilePath, 'utf8').split(/\r?\n/);
 
-fc = fs.readFileSync(opts.hangupFilePath, 'utf8');
-const endCallMessages = fc.split(/\r?\n/);
+const endCallMessages = fs.readFileSync(opts.hangupFilePath, 'utf8').split(/\r?\n/);
 
-fc = fs.readFileSync(opts.masksFilePath, 'utf8');
-const maskNames = fc.split(/\r?\n/);
+const maskNames = fs.readFileSync(opts.masksFilePath, 'utf8').split(/\r?\n/);
 
-fc = fs.readFileSync('c.json', 'utf-8');
-const conf = JSON.parse(fc);
+const conf = fs.readFileSync('c.json', 'utf-8').parse(fc);
 
 const channelId = String(conf.cI);
 if (channelId === '') {
