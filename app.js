@@ -24,22 +24,27 @@ let opts = {
     privacyMode: false,       // -p
     phrasesFilePath: null,    // -P
     hangupFilePath: null,     // -H 
-    namesFilePath: "names",   // -N
+    namesFilePath: null,   // -N
     disableNameLogging: false, // -n 
     skipMasks: true // whether to automatically skip masks or not.
 };
 
+const masksPath = 'info/masks'; // change to change where u put masks.
 let masks = []
-if (opts.skipMasks) {
-    fs.readFile('masks', 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error reading masks:', err)
-        }
 
-        masks = data.split('\n').map(line => line.trim());
-        console.log(masks)
-    })
+function loadMasks() {
+    fs.readFile(masksPath, 'utf8', (err, data) => {
+        if (err) return console.error('Error reading file:', err);
+        
+        const masks = data.split('\n').map(line => line.trim());
+        console.log(masks);
+    });
 }
+
+if (opts.skipMasks) {
+    loadMasks();
+}
+
 
 if (process.platform !== "win32") {
     console.log("!!! LINUX DETECTED !!!")
@@ -90,11 +95,9 @@ for (let i = 0; i < args.length; i++) {
     }
 }
 
-let fc = fs.readFileSync(opts.phrasesFilePath || 'phrases', 'utf8');
-const pMessages = fc.split(/\r?\n/);
+let pMessages = fs.readFileSync(opts.phrasesFilePath || 'info/phrases', 'utf8').split(/\r?\n/);
+const endCallMessages = fs.readFileSync(opts.hangupFilePath || 'info/hangup', 'utf8').split(/\r?\n/);
 
-fc = fs.readFileSync(opts.hangupFilePath || 'hangup', 'utf8');
-const endCallMessages = fc.split(/\r?\n/);
 
 
 require("dotenv").config()
@@ -108,17 +111,16 @@ ignoreUserIds.forEach(function(entry) {
 
 let timer = 30;
 
-async function updateFile(message, namesFilePath) {
+async function updateFile(message) {
     try {
         let fileData = '';
         try {
-            fileData = await fsPromises.readFile(namesFilePath, 'utf-8');
+            fileData = await fsPromises.readFile('info/names', 'utf-8');
         } catch (err) {
             if (err.code !== 'ENOENT') throw err;
         }
 
         const lines = fileData.split('\n').filter(Boolean);
-        
         const userMap = new Map(lines.map(line => {
             const [name, number] = line.split(':');
             return [name, parseInt(number, 10)];
@@ -129,7 +131,7 @@ async function updateFile(message, namesFilePath) {
         userMap.set(username, currentCount + 1);
 
         const updatedData = Array.from(userMap).map(([name, number]) => `${name}:${number}`).join('\n');
-        await fsPromises.writeFile(namesFilePath, updatedData + '\n', 'utf-8');
+        await fsPromises.writeFile('info/names', updatedData + '\n', 'utf-8');
     } catch (error) {
         console.error('Error:', error.message);
     }
@@ -193,4 +195,4 @@ const token = process.env.token;
 client.login(token).catch((err) => {
     console.error("Failed to log in:", err);
 });
-
+        

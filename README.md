@@ -5,4 +5,4 @@ This is a Windows only developing branch, focused specifically on Windows, do NO
  - Ignored user ids doesn't work.
 
 # features linux doesnt have 😎😎😎😎😎😎😎😎
- - auto skip masks
+ - organized stuff
