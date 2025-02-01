@@ -8,6 +8,7 @@ This is a Windows only developing branch, focused specifically on Windows, do NO
 - More ease of use for non techy people
 - More generality on the use of this bot
 - Cleaner overall code
+- Full parity between the versions (Linux has more features, therefor cooler, signed 3SSF)
 
 # This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
 - We are not associated with Discord nor the Discord.js-selfbot project.
