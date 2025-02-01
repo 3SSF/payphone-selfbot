@@ -24,27 +24,12 @@ let opts = {
     privacyMode: false,       // -p
     phrasesFilePath: null,    // -P
     hangupFilePath: null,     // -H 
-    namesFilePath: null,   // -N
+    namesFilePath: "names",   // -N
     disableNameLogging: false, // -n 
-    skipMasks: true // whether to automatically skip masks or not.
+    autoSkipMasks: true,      // -m
+    masksFilePath: null,      // -M   
 };
-
-const masksPath = 'info/masks'; // change to change where u put masks.
 let masks = []
-
-function loadMasks() {
-    fs.readFile(masksPath, 'utf8', (err, data) => {
-        if (err) return console.error('Error reading file:', err);
-        
-        const masks = data.split('\n').map(line => line.trim());
-        console.log(masks);
-    });
-}
-
-if (opts.skipMasks) {
-    loadMasks();
-}
-
 
 if (process.platform !== "win32") {
     console.log("!!! LINUX DETECTED !!!")
@@ -52,6 +37,8 @@ if (process.platform !== "win32") {
     console.log("Please use our main branch for better compatibility with Linux, and other OS's.")
     console.log("-------------------------------------------------------")
  }
+
+
 
 for (let i = 0; i < args.length; i++) {
     let arg = args[i];
@@ -62,9 +49,10 @@ for (let i = 0; i < args.length; i++) {
             process.exit();
         }
 
-        else if (arg === '-H' || arg === '-P' || arg === '-N') {
+        // Handling path flags (-P, -H, -N, -M) separately
+        else if (arg === '-H' || arg === '-P' || arg === '-N' || arg === '-M') {
             if (i + 1 < args.length && args[i + 1].startsWith('-')) {
-                console.error(`Error: Path flags (-P, -H, -N) cannot be stacked with other flags.`);
+                console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
                 process.exit(1);
             }
             if (arg === '-H') {
@@ -73,20 +61,23 @@ for (let i = 0; i < args.length; i++) {
                 opts.phrasesFilePath = args[i + 1];
             } else if (arg === '-N') {
                 opts.namesFilePath = args[i + 1];
+            } else if (arg === '-M') {
+                opts.masksFilePath = args[i + 1];
             }
             i++;
         }
 
-        else if (arg.includes('p') || arg.includes('l') || arg.includes('n')) {
-            if (arg.includes('P') || arg.includes('H') || arg.includes('N')) {
-                console.error(`Error: Path flags (-P, -H, -N) cannot be stacked with other flags.`);
+        else if (arg.includes('p') || arg.includes('l') || arg.includes('n') || arg.includes('m')) {
+            if (arg.includes('P') || arg.includes('H') || arg.includes('N') || arg.includes('M')) {
+                console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
                 process.exit(1);
             }
             
             for (let char of arg.slice(1)) {
                 if (char === 'p') opts.privacyMode = true;
-                else if (char === 'l') opts.logToConsole = true;
+                else if (char === 'l') opts.logToConsole = false;
                 else if (char === 'n') opts.disableNameLogging = true;
+                else if (char === 'm') opts.autoSkipMasks = false;
             }
         } else {
             console.error(`Invalid argument: ${arg}. Cannot stack arguments.`);
@@ -97,30 +88,31 @@ for (let i = 0; i < args.length; i++) {
 
 let pMessages = fs.readFileSync(opts.phrasesFilePath || 'info/phrases', 'utf8').split(/\r?\n/);
 const endCallMessages = fs.readFileSync(opts.hangupFilePath || 'info/hangup', 'utf8').split(/\r?\n/);
-
+const maskNames = fs.readFileSync(opts.masksFilePath || 'info/masks', 'utf8').split(/\r?\n/);
 
 
 require("dotenv").config()
 const channelId = String(process.env.channelId);
-console.log(channelId)
+if (channelId === '') {
+  console.error('channelId is empty, exiting... Please run setup.sh.');
+  process.exit(1);
+}
 
-const ignoreUserIds = Array.isArray(process.env.iUI) ? process.env.iUI : [];
-ignoreUserIds.forEach(function(entry) {
-    console.log(entry);
-  });
+
 
 let timer = 30;
 
-async function updateFile(message) {
+async function updateFile(message, namesFilePath) {
     try {
         let fileData = '';
         try {
-            fileData = await fsPromises.readFile('info/names', 'utf-8');
+            fileData = await fsPromises.readFile(namesFilePath, 'utf-8');
         } catch (err) {
             if (err.code !== 'ENOENT') throw err;
         }
 
         const lines = fileData.split('\n').filter(Boolean);
+        
         const userMap = new Map(lines.map(line => {
             const [name, number] = line.split(':');
             return [name, parseInt(number, 10)];
@@ -131,11 +123,12 @@ async function updateFile(message) {
         userMap.set(username, currentCount + 1);
 
         const updatedData = Array.from(userMap).map(([name, number]) => `${name}:${number}`).join('\n');
-        await fsPromises.writeFile('info/names', updatedData + '\n', 'utf-8');
+        await fsPromises.writeFile(namesFilePath, updatedData + '\n', 'utf-8');
     } catch (error) {
         console.error('Error:', error.message);
     }
 }
+
 
 //(async () => {
   //  setInterval(async () => {
@@ -148,29 +141,16 @@ async function updateFile(message) {
 //})();
 
 client.on("messageCreate", async (message) => {
-    if(message == "")
-    {
-        stop
-    }
-    if (ignoreUserIds.includes(message.author.id))
-    {
-        stop
-    }
-    
+    if (masks.includes(message.author.username) && opts.autoSkipMasks) message.reply('p.h');
     if (message.channel.id === channelId && message.author.id !== client.user.id) {
-        if (masks.includes(message.author.displayName)) {
-            await message.reply("p.h");
-            await message.reply("p.c");
-            
-        }
         if (endCallMessages.includes(message.content) && message.author.username == "Payphone"){
             await message.reply("p.c");
             return;
-            
         }
         if (message.author.username == "Payphone" && message.content.includes("TIP")) return;
 
         timer = 30;
+
         randomIndex = Math.floor(Math.random() * pMessages.length);
         await message.reply(pMessages[randomIndex]).catch((err) => console.error("Failed to send reply:", err));
         
@@ -195,4 +175,3 @@ const token = process.env.token;
 client.login(token).catch((err) => {
     console.error("Failed to log in:", err);
 });
-        
