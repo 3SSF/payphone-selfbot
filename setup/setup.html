@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Setup</title>
+    <style>
+        * {
+            text-shadow: 5px 5px 5px rgba(0, 0, 0, 1);
+        }
+        body {
+            background-color: #121232;
+            color: white;
+            font-family: "DejaVuSansM Nerd Font", sans-serif;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 10px;
+            color: #aaa;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 15px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+    input {
+        padding: 10px;
+        width: 200px;
+        text-align: center;
+        margin-bottom: 10px;
+        background-color: #333;
+        color: white;
+        border: 5px solid #121429;
+        border-radius: 9px;
+        font-weight: bold;
+        box-shadow: 0 0 10px rgba(42, 45, 70, 0.6);
+        text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+    }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 9px;
+            text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payphone Selfbot V7G (Setup Script)</h1>
+
+    <div class="input-container">
+        <label for="channelID">Enter Channel ID</label>
+        <input id="channelID" type="text" placeholder="CHANNEL ID">
+
+        <label for="ignoredUsers">Enter Ignored Users (Comma-Separated)</label>
+        <input id="ignoredUsers" type="text" placeholder="IGNORED USERS">
+
+        <label for="token">Enter Token</label>
+        <input id="token" type="text" placeholder="TOKEN">
+
+        <label for="callMsg">Enter Call Message</label>
+        <input id="callMsg" type="text" placeholder="CALL MESSAGE">
+
+        <label for="hangupMsg">Enter Hangup Message</label>
+        <input id="hangupMsg" type="text" placeholder="HANGUP MESSAGE">
+
+        <label for="autoSkipDelay">Enter Auto Skip Delay (seconds)</label>
+        <input id="autoSkipDelay" type="number" placeholder="DELAY">
+
+        <label for="botname">Enter Bot Name</label>
+        <input id="botname" type="text" placeholder="BOT NAME">
+
+        <button id="submitBtn">Save Config</button>
+    </div>
+
+    <footer>
+        When downloading the '.env' file, it may try and save as 'env.txt', please rename the file to '.env'
+    </footer>
+    <footer>
+        Please move the downloaded files to the root of the directory in which the main bot script is located in
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <script>
+        document.querySelectorAll("input").forEach(input => {
+            input.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                }
+            });
+        });
+
+        document.getElementById("submitBtn").addEventListener("click", function() {
+            const channelID = document.getElementById("channelID").value;
+            const ignoredUsers = document.getElementById("ignoredUsers").value.split(',').map(id => id.trim());
+            const token = document.getElementById("token").value;
+            const callMsg = document.getElementById("callMsg").value;
+            const hangupMsg = document.getElementById("hangupMsg").value;
+            const autoSkipDelay = document.getElementById("autoSkipDelay").value;
+            const botname = document.getElementById("botname").value;
+
+            const config = {
+                cI: channelID,
+                iUI: ignoredUsers,
+                callMsg: callMsg,
+                hangupMsg: hangupMsg,
+                autoSkipDelay: autoSkipDelay,
+                phoneBotName: botname
+            };
+
+            const envContent = `token="${token}"`;
+
+            const configJson = JSON.stringify(config, null, 2);
+
+            const blobJson = new Blob([configJson], { type: "application/json" });
+            saveAs(blobJson, "c.json");
+
+            const blobEnv = new Blob([envContent], { type: "text/plain" });
+            saveAs(blobEnv, ".env");
+
+            alert("Config files saved (download started).");
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,15 @@
+{
+    "name": "windows",
+    "version": "V7G",
+    "description": "Setup script",
+    "main": "setup.html",
+    "devTools": true,
+    "window": {
+        "width": 800,
+        "height": 650
+    },
+    "keywords": [],
+    "author": "3SSF",
+    "license": "GPL-3.0",
+    "type": "commonjs"
+}
