@@ -2,6 +2,11 @@
 ## A discord automatic messaging base for payphone-like bots.
 ### Please don't use this for PayPhone! We only use it as an example
 
+
+# This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
+- We are not associated with Discord nor the Discord.js-selfbot project.
+
+
 # For windows users only:
 Swap to [this](https://github.com/3SSF/payphone-selfbot/tree/windows-dev) branch!
 
@@ -22,8 +27,6 @@ example:
     "args" : ["-nlm", "-H", "/path/to/file"]
 }
 
-# This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
-- We are not associated with Discord nor the Discord.js-selfbot project.
 
 # Future plans
 - Less hardcoding on variables
