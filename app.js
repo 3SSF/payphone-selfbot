@@ -1,4 +1,8 @@
+
 const fs = require('fs');
+const fsPromises = require('fs').promises;
+require("dotenv").config();
+
 let args = [];
 
 if (fs.existsSync('args.json')) {
@@ -12,154 +16,155 @@ if (fs.existsSync('args.json')) {
 
 args = args.concat(process.argv.slice(2));
 
-const { count } = require("console");
 const Discord = require("discord.js-selfbot-v13");
-const fsPromises = require('fs').promises;
+
+const client = new Discord.Client({ checkUpdate: false });
 
 let opts = { 
-    logToConsole: true,              // -l
-    privacyMode: false,              // -p
-    phrasesFilePath: 'list/phrases', // -P
-    hangupFilePath: 'list/hangup',   // -H
-    namesFilePath: 'list/names',     // -N
-    disableNameLogging: false,       // -n 
-    autoSkipMasks: true,             // -m
-    masksFilePath: 'list/masks',     // -M 
+    logToConsole: true,
+    privacyMode: false,
+    phrasesFilePath: 'list/phrases',
+    hangupFilePath: 'list/hangup',
+    namesFilePath: 'list/names',
+    disableNameLogging: false,
+    autoSkipMasks: true,
+    masksFilePath: 'list/masks',
+    typingDelay: false
 };
 
 for (let i = 0; i < args.length; i++) {
     let arg = args[i];
-    
-    if (arg.startsWith('-')) {
-        if (arg === '-h') {
-            console.log('payphone-bot 2000 manual\narguments:\n\t-p - Privacy mode: hides full username, only displaying first 2 letters of username in console\n\t-l - Log to console: whether or not the messages, and responses should be logged to console\n\t-P <file> - Custom file path for phrases\n\t-H <file> - Custom file path for hangup\n\t-n - Disable name logging\n\t-N <file> - Custom file path for names\n\t-m Disable auto skipping masked users\n\t-M <file> - masked usernames file path');
-            process.exit();
-        }
-        else if (arg === '-H' || arg === '-P' || arg === '-N' || arg === '-M') {
-            if (i + 1 < args.length && args[i + 1].startsWith('-')) {
-                console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
-                process.exit(1);
-            }
-            if (arg === '-H') {
-                opts.hangupFilePath = args[i + 1];
-            } else if (arg === '-P') {
-                opts.phrasesFilePath = args[i + 1];
-            } else if (arg === '-N') {
-                opts.namesFilePath = args[i + 1];
-            } else if (arg === '-M') {
-                opts.masksFilePath = args[i + 1];
-            }
-            i++;
-        }
-        else if (arg.includes('p') || arg.includes('l') || arg.includes('n') || arg.includes('m')) {
-            if (arg.includes('P') || arg.includes('H') || arg.includes('N') || arg.includes('M')) {
-                console.error(`Error: Path flags (-P, -H, -N, -M) cannot be stacked with other flags.`);
-                process.exit(1);
-            }
-            for (let char of arg.slice(1)) {
-                if (char === 'p') opts.privacyMode = true;
-                else if (char === 'l') opts.logToConsole = false;
-                else if (char === 'n') opts.disableNameLogging = true;
-                else if (char === 'm') opts.autoSkipMasks = false;
-            }
-        } else {
-            console.error(`Invalid argument: ${arg}. Cannot stack arguments.`);
+    if (!arg.startsWith('-')) continue;
+
+    if (arg === '-h') {
+        console.log(
+`payphone-bot 2000 manual
+-p  Privacy mode
+-l  Disable console logging
+-n  Disable name logging
+-m  Disable auto skipping masked users
+-D  Human-like typing delay
+-P <file>  Phrases file
+-H <file>  Hangup file
+-N <file>  Names file
+-M <file>  Masked names file`
+        );
+        process.exit();
+    }
+
+    if (['-P','-H','-N','-M'].includes(arg)) {
+        if (!args[i + 1] || args[i + 1].startsWith('-')) {
+            console.error("Error: Path flags require a value.");
             process.exit(1);
         }
+        if (arg === '-P') opts.phrasesFilePath = args[++i];
+        if (arg === '-H') opts.hangupFilePath = args[++i];
+        if (arg === '-N') opts.namesFilePath = args[++i];
+        if (arg === '-M') opts.masksFilePath = args[++i];
+        continue;
+    }
+
+    for (const c of arg.slice(1)) {
+        if (c === 'p') opts.privacyMode = true;
+        if (c === 'l') opts.logToConsole = false;
+        if (c === 'n') opts.disableNameLogging = true;
+        if (c === 'm') opts.autoSkipMasks = false;
+        if (c === 'D') opts.typingDelay = true;
     }
 }
 
-const pMessages = fs.readFileSync(opts.phrasesFilePath, 'utf8').split(/\r?\n/);
-const endCallMessages = fs.readFileSync(opts.hangupFilePath, 'utf8').split(/\r?\n/);
-const maskNames = fs.readFileSync(opts.masksFilePath, 'utf8').split(/\r?\n/);
+const pMessages = fs.readFileSync(opts.phrasesFilePath, 'utf8').split(/\r?\n/).filter(Boolean);
+const endCallMessages = fs.readFileSync(opts.hangupFilePath, 'utf8').split(/\r?\n/).filter(Boolean);
+const maskNames = fs.readFileSync(opts.masksFilePath, 'utf8').split(/\r?\n/).filter(Boolean);
 
-const conf = JSON.parse(fs.readFileSync('c.json', 'utf-8'));
+const conf = JSON.parse(fs.readFileSync('c.json', 'utf8'));
 const channelId = String(conf.cI);
-if (channelId === '') {
-  console.error('channelId is empty, exiting... Please run setup.sh.');
-  process.exit(1);
+if (!channelId) {
+    console.error("channelId missing. Run setup.");
+    process.exit(1);
 }
 const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
-let hangupDelay = conf.hangupDelay;
 const callMessage = conf.callMsg;
 const hangupMessage = conf.hangupMsg;
 const phoneBotName = conf.phoneBotName;
+let hangupDelay = conf.hangupDelay;
 
-async function updateFile(message, namesFilePath) {
+async function updateFile(message, filePath) {
     try {
-        let fileData = '';
-        try {
-            fileData = await fsPromises.readFile(namesFilePath, 'utf-8');
-        } catch (err) {
-            if (err.code !== 'ENOENT') throw err;
-        }
-
-        const lines = fileData.split('\n').filter(Boolean);
-        
-        const userMap = new Map(lines.map(line => {
-            const [name, number] = line.split(':');
-            return [name, parseInt(number, 10)];
-        }));
-
-        const username = message.author.username;
-        const currentCount = userMap.get(username) || 0;
-        userMap.set(username, currentCount + 1);
-
-        const updatedData = Array.from(userMap).map(([name, number]) => `${name}:${number}`).join('\n');
-        await fsPromises.writeFile(namesFilePath, updatedData + '\n', 'utf-8');
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
+        let data = "";
+        try { data = await fsPromises.readFile(filePath, "utf8"); } catch (e) { if (e.code !== "ENOENT") throw e; }
+        const map = new Map(data.split("\n").filter(Boolean).map(l => { const [n,c] = l.split(":"); return [n, Number(c)]; }));
+        const name = message.author.username;
+        map.set(name, (map.get(name) || 0) + 1);
+        await fsPromises.writeFile(filePath, [...map.entries()].map(([n,c]) => `${n}:${c}`).join("\n") + "\n");
+    } catch (e) { console.error("Name log error:", e.message); }
 }
 
-(async () => {
-    setInterval(async () => {
-        if (hangupDelay <= 0){
-            await client.channels.cache.get(channelId).send(hangupMessage);
-            await client.channels.cache.get(channelId).send(callMessage);
-        }
-        hangupDelay--;
-    }, 1000);
-})();
-
-if (process.platform == "win32") {
-    console.log("Hey, we see you're running windows, we urge you to use our 'windows-dev' branch instead, unless you are fine with heavy debugging.");
-} 
-
-client.on("messageCreate", async (message) => {
-    if (maskNames.includes(message.author.username) && opts.autoSkipMasks) message.reply(hangupMessage);
-    if ((message.channel.id === channelId && !ignoreUserIds.includes(message.author.id)) && message.author.id !== client.user.id) {
-        if (endCallMessages.includes(message.content) && message.author.username == phoneBotName){
-            await message.reply(callMessage);
-            return;
-        }
-        if (message.author.username == phoneBotName && message.content.includes("TIP")) return;
-
-        hangupDelay = conf.hangupDelay;
-
-        randomIndex = Math.floor(Math.random() * pMessages.length);
-        await message.reply(pMessages[randomIndex]).catch((err) => console.error("Failed to send reply:", err));
-        
-        if (!opts.logToConsole) return;
-        if (!opts.privacyMode) {
-            console.log(`${message.author.username} : `, message.content, " > ", pMessages[randomIndex]);
-            if (!opts.disableNameLogging) {
-                updateFile(message, opts.namesFilePath);
-            }
-        } else {
-            console.log(`${message.author.username[0]}${message.author.username[1]}.. : `, message.content, " > ", pMessages[randomIndex]);
-        }
-    }
-});
+let delay = 0;
+let reactionDelay = 0;
+async function humanDelayWithTyping(channel, text) {
+    if (!opts.typingDelay) return;
+    let intervalId;
+    const approxTotal = text.length * 150;
+    reactionDelay = 1000 + Math.random() * 2000;
+    await new Promise(r => setTimeout(r, reactionDelay));
+    if (approxTotal > 7000) intervalId = setInterval(() => { channel.sendTyping().catch(() => {}); }, 7000);
+    await channel.sendTyping().catch(() => {});
+    delay = 0;
+    for (let i = 0; i < text.length; i++) delay += 25 + Math.random()*100;
+    await new Promise(r => setTimeout(r, delay));
+    if (intervalId) clearInterval(intervalId);
+}
 
 client.on("ready", () => {
     console.log("Bot is now online!");
-    console.log(`Channel name: ${client.channels.cache.get(channelId).name}`);
+    console.log(`Channel: ${client.channels.cache.get(channelId)?.name}`);
+    setInterval(async () => {
+        if (hangupDelay <= 0) {
+            const ch = client.channels.cache.get(channelId);
+            if (!ch) return;
+            await ch.send(hangupMessage);
+            await ch.send(callMessage);
+            hangupDelay = conf.hangupDelay;
+            return;
+        }
+        hangupDelay--;
+    }, 1000);
 });
 
-require("dotenv").config();
-const token = process.env.token;
-client.login(token).catch((err) => {
-    console.error("Failed to log in:", err);
+client.on("messageCreate", async (message) => {
+    if (message.channel.id !== channelId) return;
+    if (ignoreUserIds.includes(message.author.id)) return;
+    if (message.author.id === client.user.id) return;
+
+    if (maskNames.includes(message.author.username) && opts.autoSkipMasks) {
+        await message.reply(hangupMessage);
+        return;
+    }
+
+    if (endCallMessages.includes(message.content) && message.author.username === phoneBotName) {
+        await message.reply(callMessage);
+        return;
+    }
+
+    if (message.author.username === phoneBotName && message.content.includes("TIP")) return;
+
+    hangupDelay = conf.hangupDelay;
+
+    const reply = pMessages[Math.floor(Math.random() * pMessages.length)];
+
+    if (opts.typingDelay) await humanDelayWithTyping(message.channel, reply);
+
+    await message.channel.send(reply).catch(() => {});
+
+    if (!opts.logToConsole) return;
+
+    const name = opts.privacyMode ? message.author.username.slice(0,2)+".." : message.author.username;
+    console.log(`${name}: ${message.content} > ${reply} @ ${Math.round(delay)/1000} + ${Math.round(reactionDelay)/1000}s`);
+
+    if (!opts.disableNameLogging && !opts.privacyMode) updateFile(message, opts.namesFilePath);
 });
 
+if (process.platform === "win32") console.log("Windows detected — dev branch recommended.");
+
+client.login(process.env.token).catch(err => console.error("Login failed:", err));
