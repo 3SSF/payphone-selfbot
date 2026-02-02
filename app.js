@@ -95,7 +95,7 @@ setInterval(async () => {
     if (!ch) return;
 
     const now = Date.now();
-    if (now - lastMessageTime >= hangupDelayMs) {
+    if (now - lastMessageTime >= hangupDelay) {
         await ch.send(hangupMessage).catch(() => {});
         await ch.send(callMessage).catch(() => {});
         lastMessageTime = Date.now(); // reset after hangup
