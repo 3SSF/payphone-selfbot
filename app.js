@@ -87,7 +87,20 @@ const ignoreUserIds = Array.isArray(conf.iUI) ? conf.iUI : [];
 const callMessage = conf.callMsg;
 const hangupMessage = conf.hangupMsg;
 const phoneBotName = conf.phoneBotName;
-let hangupDelay = conf.hangupDelay;
+const hangupDelay = (conf.autoSkipDelay || 30) * 1000;
+let lastMessageTime = Date.now();
+
+setInterval(async () => {
+    const ch = client.channels.cache.get(channelId);
+    if (!ch) return;
+
+    const now = Date.now();
+    if (now - lastMessageTime >= hangupDelayMs) {
+        await ch.send(hangupMessage).catch(() => {});
+        await ch.send(callMessage).catch(() => {});
+        lastMessageTime = Date.now(); // reset after hangup
+    }
+}, 1000);
 
 async function updateFile(message, filePath) {
     try {
@@ -119,24 +132,14 @@ async function humanDelayWithTyping(channel, text) {
 client.on("ready", () => {
     console.log("Bot is now online!");
     console.log(`Channel: ${client.channels.cache.get(channelId)?.name}`);
-    setInterval(async () => {
-        if (hangupDelay <= 0) {
-            const ch = client.channels.cache.get(channelId);
-            if (!ch) return;
-            await ch.send(hangupMessage);
-            await ch.send(callMessage);
-            hangupDelay = conf.hangupDelay;
-            return;
-        }
-        hangupDelay--;
-    }, 1000);
+    console.log(`Feel free to make merge requests of any new phrases you may have thought of to add to the bot!`)
 });
 
 client.on("messageCreate", async (message) => {
     if (message.channel.id !== channelId) return;
     if (ignoreUserIds.includes(message.author.id)) return;
     if (message.author.id === client.user.id) return;
-
+    lastMessageTime = Date.now();
     if (maskNames.includes(message.author.username) && opts.autoSkipMasks) {
         await message.reply(hangupMessage);
         return;
