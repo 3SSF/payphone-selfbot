@@ -150,6 +150,9 @@ client.on("messageCreate", async (message) => {
     }
 
     if (message.author.username === phoneBotName && message.content.includes("TIP")) return;
+    if (message.author.username === phoneBotName && message.content.includes("connected")) return;
+    if (message.author.username === phoneBotName && message.content.includes("answered")) return;
+    if (message.author.username === phoneBotName && message.content.includes("live")) return;
 
     const reply = pMessages[Math.floor(Math.random() * pMessages.length)];
 
