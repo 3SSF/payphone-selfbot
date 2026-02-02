@@ -91,11 +91,10 @@ const hangupDelay = (conf.autoSkipDelay || 30) * 1000;
 let lastMessageTime = Date.now();
 
 setInterval(async () => {
-    const ch = client.channels.cache.get(channelId);
+    let ch = client.channels.cache.get(channelId);
     if (!ch) return;
 
-    const now = Date.now();
-    if (now - lastMessageTime >= hangupDelay) {
+    if (Date.now() - lastMessageTime >= hangupDelay) {
         await ch.send(hangupMessage).catch(() => {});
         await ch.send(callMessage).catch(() => {});
         lastMessageTime = Date.now(); // reset after hangup
@@ -151,8 +150,6 @@ client.on("messageCreate", async (message) => {
     }
 
     if (message.author.username === phoneBotName && message.content.includes("TIP")) return;
-
-    hangupDelay = conf.hangupDelay;
 
     const reply = pMessages[Math.floor(Math.random() * pMessages.length)];
 
