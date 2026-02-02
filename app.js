@@ -150,10 +150,12 @@ client.on("messageCreate", async (message) => {
     }
 
     if (message.author.username === phoneBotName && message.content.includes("TIP")) return;
-    if (message.author.username === phoneBotName && message.content.includes("connected")) return;
+    if (message.author.username === phoneBotName && message.content.includes("Connected")) return;
     if (message.author.username === phoneBotName && message.content.includes("answered")) return;
     if (message.author.username === phoneBotName && message.content.includes("live")) return;
 
+    if(message.author.username === "github.com/3SSF/payphone-selfbot") { await message.reply(hangupMessage); };
+    
     const reply = pMessages[Math.floor(Math.random() * pMessages.length)];
 
     if (opts.typingDelay) await humanDelayWithTyping(message.channel, reply);
