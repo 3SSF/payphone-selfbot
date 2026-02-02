@@ -154,7 +154,10 @@ client.on("messageCreate", async (message) => {
     if (message.author.username === phoneBotName && message.content.includes("answered")) return;
     if (message.author.username === phoneBotName && message.content.includes("live")) return;
 
-    if(message.author.username === "github.com/3SSF/payphone-selfbot") { await message.reply(hangupMessage); };
+    if(message.author.username === "github.com/3SSF/payphone-selfbot") {
+        await message.reply(hangupMessage);
+        return;
+    }
     
     const reply = pMessages[Math.floor(Math.random() * pMessages.length)];
 
