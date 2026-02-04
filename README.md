@@ -2,7 +2,7 @@
 ## A discord automatic messaging base for payphone-like bots.
 ### Please don't use this for PayPhone! We only use it as an example
 
-# if you are an admin or developer of payphone and would like the ongoing nuisance of our bots running multiple instances advertising this repo, please friend @\lexintrus on discord, we will immediately stop it, we just wanted to have a bit of fun and be noticed (you can unfriend after, obviously)
+# if you are an admin or developer of payphone and would like the ongoing nuisance of our bots running multiple instances advertising this repo, please friend @lexintrus on discord, we will immediately stop it, we just wanted to have a bit of fun and be noticed (you can unfriend after, obviously)
 
 # This is a selfbot, and against Discord TOS. We do not take responsibility for any bans issued.
 - We are not associated with Discord nor the Discord.js-selfbot project.
