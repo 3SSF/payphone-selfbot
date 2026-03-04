@@ -168,8 +168,16 @@ client.on("messageCreate", async (message) => {
     if (!opts.logToConsole) return;
 
     const name = opts.privacyMode ? message.author.username.slice(0,2)+".." : message.author.username;
-    console.log(`${name}: ${message.content} > ${reply} @ ${Math.round(delay)/1000} + ${Math.round(reactionDelay)/1000}s`);
-
+    console.log(
+      `\x1b[34m${name}\x1b[0m\x1b[96m:\x1b[0m ` +
+      `\x1b[97m${message.content}\x1b[0m ` +
+      `\x1b[33m>\x1b[0m ` +
+      `\x1b[36m${reply}\x1b[0m ` +
+      `\x1b[35m@\x1b[0m ` +
+      `\x1b[32m${Math.round(delay)/1000}\x1b[0m ` +
+      `\x1b[90m+\x1b[0m ` +
+      `\x1b[32m${Math.round(reactionDelay)/1000}s\x1b[0m`
+    );
     if (!opts.disableNameLogging && !opts.privacyMode) updateFile(message, opts.namesFilePath);
 });
 
